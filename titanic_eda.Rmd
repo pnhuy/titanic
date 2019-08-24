@@ -1,5 +1,6 @@
 ---
 title: "Exploratory data analysis on TITANIC dataset"
+author: "Instructional team -- VEF Academy"
 output:
   pdf_document: default
   html_document:
