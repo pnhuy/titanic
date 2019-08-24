@@ -1,0 +1,70 @@
+---
+title: "Exploratory data analysis - An example on TITANIC dataset"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data importing
+
+Import the data into `r` by using function `read.csv`, we use the parameter `na.string` to specify the pattern of missing values.
+```{r}
+df = read.csv('titanic_train.csv', na.strings = c("NA", "NaN", "", " "))
+```
+
+You also see some properties of dataset with `dim()` and `str()`.
+```{r}
+dim(df)
+str(df)
+```
+
+The `dim()` function gives us a vector of 2 items including the number of rows/records/observation and the number of columns/features/fields. Meanwhile, function `str()` shows the basic characteristics of each columns such as data type and some values in the column. 
+
+Some common statistics are also calculated by using `summary()` function:
+```{r}
+summary(df)
+```
+
+The function `object.size()` returns the memory allocation of data frame. 
+```{r}
+object.size(df)
+```
+
+To reduct the size of data frame, we can specify the data type of each column after reading:
+```{r}
+print(paste('Size of df before optimize:', object.size(df)))
+df$survived = as.logical(df$survived)
+df$ticket = as.numeric(df$ticket)
+print(paste('Size of df after optimize:', object.size(df)))
+```
+
+
+## Data cleaning
+### Detecting missing values
+In `R`, function `is.na()` return the logical vector which indicate if the value is missing or not.
+Count the number of missing values in the dataset:
+```{r}
+sum(is.na(df))
+```
+To count missing values per columns:
+```{r}
+colSums(is.na(df))
+```
+
+### Handling missing values
+Drop the columns:
+```{r}
+df <- subset(df, select=-c(age, cabin))
+print(dim(df))
+```
+
+Drop the rows:
+```{r}
+df <- subset(df, select=!is.na(df)$embarked)
+```
+
+
+### Detecting the outliers using 
+
