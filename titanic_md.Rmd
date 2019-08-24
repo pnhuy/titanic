@@ -1,6 +1,8 @@
 ---
 title: "Exploratory data analysis - An example on TITANIC dataset"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -62,9 +64,65 @@ print(dim(df))
 
 Drop the rows:
 ```{r}
-df <- subset(df, select=!is.na(df)$embarked)
+df <- subset(df, !is.na(df$embarked))
+print(dim(df))
 ```
 
 
-### Detecting the outliers using 
+### Detecting the outliers
+Visualize the variable by using Boxplot to investigate the potential outliers:
+```{r}
+boxplot(df$fare,
+        main='Boxplot of Fare')
+```
+
+Or using the histogram:
+```{r}
+library(ggplot2)
+g <- ggplot(df)
+g <- g + geom_histogram(aes(x=fare), binwidth = 20)
+g <- g + geom_density(aes(x=fare, y=..count.. * 30))
+g
+
+```
+
+## Data transformation
+
+Apply log-transformation to `fare` features to normalize this variable:
+
+```{r}
+fare_log <- log1p(df$fare)
+g <- ggplot()
+g <- g + geom_histogram(aes(x=fare_log))
+g
+```
+
+### Remove the outliers using Z-Score
+Calculating Z-Score of data series and remove the records whose Z-score greater than 2 or less than -2:
+```{r}
+fare_zscore <- (fare_log - mean(fare_log))/sd(fare_log)
+outlier <- abs(fare_zscore) > 2
+df_non_outliers <- subset(df, !outlier)
+print(dim(df_non_outliers))
+```
+
+Visualize the data after remove outliers:
+```{r}
+g <- ggplot()
+g <- g + geom_histogram(aes(x=fare_log)) + xlim(0,6)
+g
+```
+
+## Bivariate analysis
+Calculating the correlation matrix:
+
+```{r}
+df_numeric <- df[sapply(df, is.numeric)]
+df_cor <- cor(df_numeric)
+df_cor
+```
+We can also visualize the correlation matrix by heatmap
+```{r}
+heatmap(df_cor)
+```
 
